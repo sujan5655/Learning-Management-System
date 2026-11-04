@@ -128,3 +128,32 @@ def check_permission(request, permission_class, obj=None):
         )
 
     return True
+
+
+
+
+class IsAssignedInstructorOrAdmin(BasePermission):
+    """
+    Allows admins and all approved instructors
+    assigned to the course.
+    """
+
+    def has_permission(self, request, view):
+        user = request.user
+
+        return (
+            is_admin(user)
+            or is_approved_instructor(user)
+        )
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+
+        if is_admin(user):
+            return True
+
+        if not is_approved_instructor(user):
+            return False
+
+        return obj.instructors.filter(id=user.id).exists()
+

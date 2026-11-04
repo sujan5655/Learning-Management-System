@@ -74,3 +74,9 @@ class CourseInstructorAdmin(admin.ModelAdmin):
         "course__title",
         "instructor__email",
     )
+
+
+from .models import Section, Lesson
+
+admin.site.register(Section)
+admin.site.register(Lesson)

@@ -138,3 +138,25 @@ CELERY_TIMEZONE = TIME_ZONE
 
 
 AUTH_USER_MODEL = "accounts.User"
+
+# Bunny Stream Configuration
+
+BUNNY_STREAM_LIBRARY_ID = config(
+    "BUNNY_STREAM_LIBRARY_ID",
+    default=""
+)
+
+BUNNY_STREAM_API_KEY = config(
+    "BUNNY_STREAM_API_KEY",
+    default=""
+)
+
+BUNNY_STREAM_CDN_HOSTNAME = config(
+    "BUNNY_STREAM_CDN_HOSTNAME",
+    default=""
+)
+
+BUNNY_STREAM_READ_ONLY_API_KEY = config(
+    "BUNNY_STREAM_READ_ONLY_API_KEY",
+    default=""
+)
