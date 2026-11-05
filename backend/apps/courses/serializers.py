@@ -324,8 +324,8 @@ class SectionSerializer(serializers.ModelSerializer):
             "updated_at",
         ]
 
-
 class EnrollmentSerializer(serializers.ModelSerializer):
+
     course_title = serializers.CharField(
         source="course.title",
         read_only=True
@@ -336,6 +336,21 @@ class EnrollmentSerializer(serializers.ModelSerializer):
         read_only=True
     )
 
+    course_thumbnail = serializers.ImageField(
+        source="course.thumbnail",
+        read_only=True
+    )
+
+    category_name = serializers.CharField(
+        source="course.category.name",
+        read_only=True
+    )
+
+    course_level = serializers.CharField(
+        source="course.level",
+        read_only=True
+    )
+
     class Meta:
         model = Enrollment
         fields = [
@@ -343,16 +358,15 @@ class EnrollmentSerializer(serializers.ModelSerializer):
             "course",
             "course_title",
             "course_slug",
+            "course_thumbnail",
+            "category_name",
+            "course_level",
             "status",
             "enrolled_at",
             "updated_at",
         ]
-        read_only_fields = [
-            "id",
-            "status",
-            "enrolled_at",
-            "updated_at",
-        ]
+
+        read_only_fields = fields
 class LessonProgressSerializer(serializers.ModelSerializer):
     lesson_title = serializers.CharField(
         source="lesson.title",

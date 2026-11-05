@@ -10,6 +10,8 @@ from rest_framework.response import Response
 
 from django.conf import settings
 
+
+
 from .models import Category, Course, CourseInstructor
 from .serializers import CategorySerializer, CourseSerializer, PlaybackSessionEndSerializer
 from .permissions import IsAssignedInstructorOrAdmin
@@ -1025,6 +1027,30 @@ def update_lesson_progress_view(request, course_id, lesson_id):
 
     # Calculate elapsed server time
     now = timezone.now()
+    
+
+    if playback_session.last_reported_at:
+      inactivity_seconds = (
+        now - playback_session.last_reported_at
+    ).total_seconds()
+
+      timeout_seconds = (
+        settings.PLAYBACK_SESSION_TIMEOUT_MINUTES * 60
+    )
+
+      if inactivity_seconds > timeout_seconds:
+        playback_session.is_active = False
+        playback_session.save(
+            update_fields=["is_active", "updated_at"]
+        )
+
+        return Response(
+            {
+                "error": "Playback session expired due to inactivity.",
+                "message": "Please start a new playback session."
+            },
+            status=status.HTTP_410_GONE
+        )
 
     elapsed_seconds = (
         now - playback_session.last_reported_at
@@ -1329,6 +1355,14 @@ def end_playback_session_view(request, course_id, lesson_id):
             {"error": "Only students can end playback sessions."},
             status=status.HTTP_403_FORBIDDEN
         )
+    if expire_playback_session(playback_session):
+      return Response(
+        {
+            "error": "Playback session expired.",
+            "message": "Please start a new playback session."
+        },
+        status=status.HTTP_410_GONE
+    )
 
     # Verify that the lesson belongs to the course
     lesson = get_object_or_404(

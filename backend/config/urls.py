@@ -28,4 +28,6 @@ urlpatterns = [
         "api/",
         include("apps.courses.urls")
     ),
+    path("api/students/", include("apps.students.urls")),
+    path("api/instructors/", include("apps.instructors.urls")),
 ]

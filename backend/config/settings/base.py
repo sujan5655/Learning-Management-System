@@ -25,7 +25,9 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "apps.accounts",
-    "apps.courses"
+    "apps.courses",
+    "apps.students",
+    "apps.instructors"
 ]
 
 MIDDLEWARE = [
@@ -160,3 +162,14 @@ BUNNY_STREAM_READ_ONLY_API_KEY = config(
     "BUNNY_STREAM_READ_ONLY_API_KEY",
     default=""
 )
+
+PLAYBACK_SESSION_TIMEOUT_MINUTES = 30
+
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    "expire-abandoned-playback-sessions": {
+        "task": "apps.courses.tasks.expire_abandoned_playback_sessions",
+        "schedule": crontab(minute="*/5"),
+    },
+}
